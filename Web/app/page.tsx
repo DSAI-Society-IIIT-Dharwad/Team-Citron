@@ -1,146 +1,115 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [status, setStatus] = useState("");
-  
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<BlobPart[]>([]);
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const startRecording = async () => {
-    try {
-      setStatus("Requesting microphone access...");
-      // Ask for microphone permission and start stream
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        setStatus("Processing audio...");
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        await handleAudioUpload(audioBlob);
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      setStatus("Recording...");
-    } catch (err) {
-      console.error("Error accessing mic:", err);
-      setStatus("Error: Could not access microphone. Make sure permissions are granted.");
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      
-      // Stop all audio tracks entirely so the browser "recording" indicator goes away
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-    }
-  };
-
-  const handleAudioUpload = async (audioBlob: Blob) => {
-    try {
-      const formData = new FormData();
-      formData.append("file", audioBlob, "recording.webm");
-
-      setStatus("Transcribing audio...");
-      // Send audio to local FastAPI server
-      const response = await fetch("http://localhost:8000/transcribe", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        router.push("/home");
       }
+    };
+    checkSession();
+  }, [router]);
 
-      const data = await response.json();
-      setTranscript(data.text);
-      setStatus("Transcript ready");
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      // Save the result to Supabase
-      saveTranscript(data.text);
-    } catch (error) {
-      console.error("Transcription error:", error);
-      setStatus("Error: Transcription failed. Is the FastAPI server running?");
+    const { data, error } = isSignUp
+      ? await supabase.auth.signUp({ email, password })
+      : await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
     }
-  };
 
-  const saveTranscript = async (text: string) => {
-    try {
-      if (!text) return;
-      
-      setStatus("Saving to database...");
-      const { error } = await supabase
-        .from("transcripts")
-        .insert([{ 
-          raw_text: text, 
-          entities: {}, 
-          user_id: null // Assuming anon use for hackathon, replace with actual ID if auth configured
-        }]);
-
-      if (error) throw error;
-      setStatus("Saved successfully!");
-    } catch (err) {
-      console.error("Supabase insert error:", err);
-      setStatus("Error: Could not save transcript to database.");
+    if (data.user) {
+      // Small timeout to ensure the session context is updated
+      setTimeout(() => {
+        router.push("/home");
+      }, 300);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-zinc-50 dark:bg-zinc-950 font-sans">
-      <main className="flex flex-col items-center w-full max-w-2xl bg-white dark:bg-black p-10 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800">
-        <h1 className="text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-50">Voice Transcriber</h1>
-        <p className="text-zinc-600 dark:text-zinc-400 mb-8">Record your audio and see the transcript below.</p>
-
-        <div className="flex space-x-4 mb-8">
-          {!isRecording ? (
-            <button
-              onClick={startRecording}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full transition-colors flex items-center space-x-2"
-            >
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-              <span>Start Recording</span>
-            </button>
-          ) : (
-            <button
-              onClick={stopRecording}
-              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full transition-colors flex items-center space-x-2"
-            >
-              <div className="w-3 h-3 bg-white rounded-sm" />
-              <span>Stop Recording</span>
-            </button>
-          )}
+      <main className="flex flex-col w-full max-w-sm bg-white dark:bg-black p-10 rounded-3xl shadow-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-50">
+            {isSignUp ? "Create an account" : "Welcome back"}
+          </h1>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            {isSignUp
+              ? "Sign up to start transcribing your audio."
+              : "Enter your details to access your account."}
+          </p>
         </div>
 
-        {status && (
-          <div className="mb-6 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-full">
-            {status}
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm text-center">
+            {error}
           </div>
         )}
 
-        <div className="w-full">
-          <h2 className="text-xl font-semibold mb-3 text-zinc-900 dark:text-zinc-50">Transcript</h2>
-          <div className="p-6 bg-zinc-50 dark:bg-zinc-900 rounded-xl min-h-[8rem] border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
-            {transcript ? (
-              <p className="leading-relaxed">{transcript}</p>
-            ) : (
-              <p className="text-zinc-400 dark:text-zinc-600 italic">No transcript yet. Start recording to see the results here.</p>
-            )}
+        <form onSubmit={handleAuth} className="flex flex-col space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+              Email address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 focus:ring-2 focus:ring-blue-500 outline-none transition"
+              placeholder="you@example.com"
+            />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 focus:ring-2 focus:ring-blue-500 outline-none transition"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 mt-4 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-black font-semibold rounded-xl transition-colors disabled:opacity-50"
+          >
+            {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+          <button
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {isSignUp ? "Log in" : "Sign up"}
+          </button>
         </div>
       </main>
     </div>
