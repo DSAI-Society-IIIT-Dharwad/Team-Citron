@@ -120,7 +120,7 @@ npm run dev
 ```
 http://localhost:3000
 ```
-Team
+### Team
 
 Team Citron
 Indian Institute of Information Technology, Dharwad
