@@ -35,6 +35,7 @@ export default function Home() {
   const ambientAnalyserRef = useRef<AnalyserNode | null>(null);
   const ambientAnimationFrameRef = useRef<number | null>(null);
   const isRecognitionActiveRef = useRef<boolean>(false);
+  const ambientModeTriggeredRef = useRef<boolean>(false);
 
   const router = useRouter();
   const { t } = useLanguage();
@@ -124,8 +125,9 @@ export default function Home() {
         if (financeKeywords.some((w: string) => spoken.includes(w))) {
           recognitionRef.current?.stop();
           isRecognitionActiveRef.current = false;
+          ambientModeTriggeredRef.current = true;
           stopAmbientVAD();
-          startRecording();
+          startRecording(10000);
         }
       };
 
@@ -222,7 +224,7 @@ export default function Home() {
     animationFrameRef.current = requestAnimationFrame(checkSilence);
   }, []);
 
-  const startRecording = async () => {
+  const startRecording = async (timeLimit: number | null = null) => {
     try {
       if (recognitionRef.current) try { recognitionRef.current.stop(); } catch (_) {}
 
@@ -266,6 +268,12 @@ export default function Home() {
       setTranscript("");
       setStatusMessage(t("recording") || "Recording...");
       checkSilence();
+
+      if (timeLimit) {
+        setTimeout(() => {
+          stopRecording();
+        }, timeLimit);
+      }
 
     } catch (err) {
       console.error("Microphone error:", err);
@@ -376,7 +384,7 @@ export default function Home() {
 
       // Validate against financial keywords using the TRANSLATED text
       const lowerTranscript = translatedEnglishText.toLowerCase();
-      const hasFinanceKeyword = financeKeywords.length === 0 || financeKeywords.some((kw: string) => lowerTranscript.includes(kw.toLowerCase()));
+      const hasFinanceKeyword = ambientModeTriggeredRef.current || financeKeywords.length === 0 || financeKeywords.some((kw: string) => lowerTranscript.includes(kw.toLowerCase()));
 
       if (!hasFinanceKeyword) {
         setShowKeywordError(true);
@@ -406,6 +414,7 @@ export default function Home() {
     } finally {
       setIsProcessing(false);
       setStatusMessage("");
+      ambientModeTriggeredRef.current = false;
     }
   };
 
@@ -467,7 +476,7 @@ export default function Home() {
 
           <div className="flex flex-col items-center gap-8 w-full">
             <button
-              onClick={isRecording ? stopRecording : startRecording}
+              onClick={isRecording ? stopRecording : () => startRecording()}
               disabled={isProcessing}
               className={`
                 relative flex items-center justify-center w-36 h-36 rounded-full transition-all duration-500 shadow-2xl z-20

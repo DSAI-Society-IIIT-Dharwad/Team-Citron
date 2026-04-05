@@ -11,6 +11,30 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    
+    const handleTestLogin = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email: "test_user_guest@citron.com",
+                password: "CitronGuestPassword123"
+            });
+            if (error) {
+                // If it doesn't exist, we'll silently register the test user 
+                const { error: signUpError } = await supabase.auth.signUp({
+                    email: "test_user_guest@citron.com",
+                    password: "CitronGuestPassword123",
+                });
+                if (signUpError) throw signUpError;
+            }
+            router.push("/");
+        } catch (err: any) {
+            setError(err.message || "Failed to provision guest layer.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,7 +125,15 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className="mt-8 text-center">
+                <div className="mt-8 text-center flex flex-col gap-4">
+                    <button
+                        type="button"
+                        onClick={handleTestLogin}
+                        className="w-full py-2.5 rounded-xl border-2 border-brand-500/20 bg-brand-500/5 hover:bg-brand-500/10 text-brand-400 font-semibold tracking-wide transition-all shadow-sm"
+                    >
+                        Login as Test User
+                    </button>
+                    
                     <button
                         type="button"
                         onClick={() => {

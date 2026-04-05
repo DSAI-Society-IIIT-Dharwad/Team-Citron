@@ -210,7 +210,7 @@ export default function ProfilePage() {
                             <button
                                 role="switch"
                                 aria-checked={ambientAllowed}
-                                onClick={() => handleToggleWithPinCheck(toggleAmbientAllowed)}
+                                onClick={toggleAmbientAllowed}
                                 className={`${ambientAllowed ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                             >
                                 <span className={`${ambientAllowed ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
@@ -225,7 +225,7 @@ export default function ProfilePage() {
                             <button
                                 role="switch"
                                 aria-checked={disableSuggestions}
-                                onClick={() => handleToggleWithPinCheck(() => toggleMetadataFlag('disable_financial_suggestions', disableSuggestions))}
+                                onClick={() => toggleMetadataFlag('disable_financial_suggestions', disableSuggestions)}
                                 disabled={savingPrefs}
                                 className={`${disableSuggestions ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                             >
