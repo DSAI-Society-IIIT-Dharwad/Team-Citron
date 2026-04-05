@@ -1,29 +1,128 @@
-# Citron: Voice-Enabled Fractional CFO
+# Citron: Your AI Financial Intelligence Companion
 
-Citron is an intelligent, voice-first financial assistant designed to act as your personalized Fractional CFO. By seamlessly blending state-of-the-art ambient edge-listening with powerful multilingual transcription, Citron empowers users to capture complex financial thoughts, business ideas, and expense records at the speed of thought.
+Citron is an AI-driven intelligence system designed to bridge the gap between informal verbal discussions and structured fiscal planning. Developed by **Team Citron for Hack2Future 2.0**, this application securely captures, transcribes, and analyzes financial mentions in real-time to help users make more informed long-term financial decisions.
 
-## Core Architecture
+---
 
-- **True Ambient Mode**: Say goodbye to complex toggles. Citron's browser-native ambient engine continuously "listens" to the room completely offline. Upon detecting distinct financial terminology or custom wake-words, it seamlessly activates the HD recording pipeline to capture all adjacent business context for 10 seconds.
-- **Multilingual Support via Sarvam AI**: Dictate business metrics across 11 native Indian languages (Hindi, Tamil, Bengali, Telugu, etc.). The system transcribes everything losslessly.
-- **Unified Analytics**: Captured transcripts are routed through Llama-3.3 on Groq to provide immediate, actionable fractional CFO insights, categorizing structural focus (e.g., Marketing, OpEx) and compiling them into a visual analytics dashboard.
-- **Hardened Security & PII Redaction**: Advanced privacy auditing ensures that bank details, addresses, and phone numbers are instantaneously swept and redacted (`***`) by the AI before ever being written into our Supabase persistence layer. High-profile settings are naturally pin-gated.
+## The Problem
 
-## Tech Stack Overview
+In many households and professional settings, critical discussions regarding **EMIs, SIPs, and loans** happen verbally. These conversations are often **multilingual or code-mixed (e.g., Hinglish)**, leading to vague details and forgotten commitments because they are rarely documented.
 
-- **Frontend Configuration**: Next.js 16 (App Router), React 19, Tailwind CSS (v4), Recharts.
-- **Backing Logic Layer**: Groq (Llama-3), Sarvam AI (Regional Speech-to-Text).
-- **Storage Profile**: Supabase Authenticaton + Data persistence.
-## View Website
-Website can be found at: https://team-citron.vercel.app/
+---
 
-## Run Locally
+## Our Solution
 
-Ensure you have your environment keys staged (`NEXT_PUBLIC_SARVAM_API_KEY`, `GROQ_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+Citron acts as a **"Fractional CFO"** by automating the documentation of natural conversations. It transforms unstructured speech into organized financial insights **without requiring manual data entry**.
+
+---
+
+## Key Features
+
+### Financial "Wake Word" Detection
+The system initiates recording only when **finance-related words** are detected, ensuring both **security and privacy**.
+
+### Multilingual & Code-Mixed Support
+High-accuracy transcription for **English and regional Indian languages** (Hindi, Tamil, Telugu, etc.), including **code-mixed speech** such as *"EMI manage ho jayega"*.
+
+### Structured Insight Reporting
+Generates **summaries, fiscal trends, and analytical insights** for user review.
+
+### Secure User Vault
+All transcripts are **encrypted and stored securely** in a structured vault where users maintain full control to **edit, manage, or delete their history**.
+
+---
+
+## Technical Architecture
+
+Citron uses a **multi-layer processing pipeline** to ensure speed and accuracy.
+
+### Input Layer
+- Ambient audio capture
+- Secure Delay module
+
+### Processing Layer
+- Topic Detection to filter non-finance conversations
+- Automatic Speech Recognition (ASR)
+- Financial NLP Extraction
+
+### Output Layer
+- Financial Analytics Generator
+- Secure History Layer for long-term tracking
+
+---
+
+## Tech Stack
+
+**Frontend**
+- React.js
+
+**Backend**
+- Next.js
+
+**Database**
+- PostgreSQL (Supabase)
+
+**AI Models**
+- BERT  
+- FinChat-XS  
+- OpenAI GPT-4o-mini
+
+**APIs**
+- Sarvam API
+- Bhashini (for regional language processing)
+
+---
+
+## Novelty & Impact
+
+### Privacy First
+Unlike standard **always-on assistants**, Citron records only when **financial context is detected**.
+
+### User Control
+Users can **review and edit transcripts** to maintain accuracy.
+
+### Scalability
+Designed to **scale across India** by supporting multiple **regional languages and dialects**.
+
+---
+
+## Getting Started
+
+### Live Demo
+https://team-citron.vercel.app/
+
+### Local Setup
+
+1. Clone the repository
 
 ```bash
+git clone <repo-url>
+cd citron
+```
+
+2. Configure environment variables
+```
+SARVAM_API_KEY=
+OPENAI_API_KEY=
+SUPABASE_URL=
+```
+3. Install dependencies
+```
 npm install
+```
+4. Run the development server
+```
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the client-side instance.
+
+5. Open in browser
+```
+http://localhost:3000
+`
+Team
+
+Team Citron
+Indian Institute of Information Technology, Dharwad
+
+Rishik Natra
