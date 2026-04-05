@@ -14,6 +14,8 @@ Citron is an intelligent, voice-first financial assistant designed to act as you
 - **Frontend Configuration**: Next.js 16 (App Router), React 19, Tailwind CSS (v4), Recharts.
 - **Backing Logic Layer**: Groq (Llama-3), Sarvam AI (Regional Speech-to-Text).
 - **Storage Profile**: Supabase Authenticaton + Data persistence.
+## View Website
+Website can be found at: https://team-citron.vercel.app/
 
 ## Run Locally
 
