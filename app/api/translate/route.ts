@@ -20,12 +20,17 @@ export async function POST(req: Request) {
       baseURL: "https://api.groq.com/openai/v1",
     });
 
-    const prompt = `You are an elite linguistic interpreter. Your goal is to accurately translate any text, code-mixed language (like Hinglish), or foreign language strictly to English.
-Return ONLY raw, valid JSON containing the translated sentence. Do not add any stylistic notes or conversational prose. 
+    const prompt = `You are an elite linguistic interpreter and strict privacy auditor. Your goals are:
+1. Accurately translate any text, code-mixed language (like Hinglish), or foreign language strictly to English.
+2. Maintain the exact original text, but fully redact identifying PII (addresses, phone numbers, bank details, credit cards, emails, SSN/Aadhar) with asterisks (***).
+3. Ensure the English translation is similarly redacted.
+
+Return ONLY raw, valid JSON containing the translated and redacted components. Do not add any stylistic notes or conversational prose. 
 
 Output Schema:
 { 
-  "translation": "The perfectly translated English representation of the source text."
+  "redacted_original": "The mathematically original string, with ONLY the PII explicitly replaced by ***",
+  "translation": "The perfectly translated English representation, also fully redacted."
 }
 
 Source text to translate: "${text}"`;

@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Citron: Voice-Enabled Fractional CFO
 
-## Getting Started
+Citron is an intelligent, voice-first financial assistant designed to act as your personalized Fractional CFO. By seamlessly blending state-of-the-art ambient edge-listening with powerful multilingual transcription, Citron empowers users to capture complex financial thoughts, business ideas, and expense records at the speed of thought.
 
-First, run the development server:
+## Core Architecture
+
+- **True Ambient Mode**: Say goodbye to complex toggles. Citron's browser-native ambient engine continuously "listens" to the room completely offline. Upon detecting distinct financial terminology or custom wake-words, it seamlessly activates the HD recording pipeline to capture all adjacent business context for 10 seconds.
+- **Multilingual Support via Sarvam AI**: Dictate business metrics across 11 native Indian languages (Hindi, Tamil, Bengali, Telugu, etc.). The system transcribes everything losslessly.
+- **Unified Analytics**: Captured transcripts are routed through Llama-3.3 on Groq to provide immediate, actionable fractional CFO insights, categorizing structural focus (e.g., Marketing, OpEx) and compiling them into a visual analytics dashboard.
+- **Hardened Security & PII Redaction**: Advanced privacy auditing ensures that bank details, addresses, and phone numbers are instantaneously swept and redacted (`***`) by the AI before ever being written into our Supabase persistence layer. High-profile settings are naturally pin-gated.
+
+## Tech Stack Overview
+
+- **Frontend Configuration**: Next.js 16 (App Router), React 19, Tailwind CSS (v4), Recharts.
+- **Backing Logic Layer**: Groq (Llama-3), Sarvam AI (Regional Speech-to-Text).
+- **Storage Profile**: Supabase Authenticaton + Data persistence.
+
+## Run Locally
+
+Ensure you have your environment keys staged (`NEXT_PUBLIC_SARVAM_API_KEY`, `GROQ_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details
+Open [http://localhost:3000](http://localhost:3000) to view the client-side instance.

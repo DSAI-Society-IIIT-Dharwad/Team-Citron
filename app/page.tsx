@@ -381,6 +381,7 @@ export default function Home() {
       });
       const translateData = await translateRes.json();
       const translatedEnglishText = translateData.translation || rawMixedTranscript;
+      const finalOriginalText = translateData.redacted_original || rawMixedTranscript;
 
       // Validate against financial keywords using the TRANSLATED text
       const lowerTranscript = translatedEnglishText.toLowerCase();
@@ -392,12 +393,12 @@ export default function Home() {
         return; // Skip saving
       }
 
-      // As requested, display the original language itself in the active UI
-      setTranscript(rawMixedTranscript);
+      // As requested, display the explicitly redacted original language in the active UI
+      setTranscript(finalOriginalText);
 
       // Save both the original and English versions to Supabase
       const { error } = await supabase.from("transcripts").insert({
-        raw_text: rawMixedTranscript,
+        raw_text: finalOriginalText,
         translated_text: translatedEnglishText,
         user_id: session?.user?.id,
         source: isAmbientLive ? "ambient" : "manual",
