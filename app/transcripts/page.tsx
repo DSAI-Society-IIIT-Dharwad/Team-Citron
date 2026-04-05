@@ -200,7 +200,7 @@ export default function TranscriptsPage() {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-4xl font-bold tracking-tight text-white">{t("transcripts")}</h1>
                     <span className="bg-brand-500/10 text-brand-400 px-4 py-1.5 rounded-full text-sm font-semibold border border-brand-500/20">
-                        {transcripts.length} total
+                        {transcripts.length} {t("total")}
                     </span>
                 </div>
 
@@ -214,7 +214,7 @@ export default function TranscriptsPage() {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search transcripts..."
+                                placeholder={t("search_transcripts")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="block w-full pl-11 pr-4 py-3 border border-white/5 rounded-2xl leading-5 bg-zinc-900/50 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50 transition-all shadow-inner backdrop-blur-md"
@@ -226,8 +226,8 @@ export default function TranscriptsPage() {
                                 onChange={(e) => setSortOrder(e.target.value as "desc" | "asc")}
                                 className="block w-full pl-4 pr-10 py-3 text-base font-medium border border-white/5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50 rounded-2xl bg-zinc-900/50 text-zinc-200 appearance-none cursor-pointer transition-all shadow-inner backdrop-blur-md"
                             >
-                                <option value="desc">Most Recent</option>
-                                <option value="asc">Oldest</option>
+                                <option value="desc">{t("most_recent")}</option>
+                                <option value="asc">{t("oldest_first")}</option>
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -274,11 +274,11 @@ export default function TranscriptsPage() {
                                         {tItem.source === "ambient" ? (
                                             <span className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-md text-xs font-bold uppercase tracking-wider">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                                                Ambient
+                                                {t("ambient")}
                                             </span>
                                         ) : (
                                             <span className="px-2.5 py-1 bg-zinc-800 text-zinc-400 border border-zinc-700 rounded-md text-xs font-bold uppercase tracking-wider">
-                                                Manual
+                                                {t("manual")}
                                             </span>
                                         )}
                                         <span className="text-sm font-medium text-zinc-500">{formatDate(tItem.created_at)}</span>
@@ -299,7 +299,7 @@ export default function TranscriptsPage() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                                 </svg>
                                             )}
-                                            {tItem.is_locked ? "Locked" : "Lock"}
+                                            {tItem.is_locked ? t("unlock") : t("lock")}
                                         </button>
 
                                         <button 
@@ -311,7 +311,7 @@ export default function TranscriptsPage() {
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
-                                            Delete
+                                            {t("delete")}
                                         </button>
 
                                         <button 
@@ -326,7 +326,7 @@ export default function TranscriptsPage() {
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                             </svg>
-                                            Edit
+                                            {t("edit")}
                                         </button>
 
                                         <button 
@@ -337,7 +337,7 @@ export default function TranscriptsPage() {
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                             </svg>
-                                            Analytics
+                                            {t("view_analytics")}
                                         </button>
                                     </div>
                                 </div>

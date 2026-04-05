@@ -7,12 +7,14 @@ import Navbar from "../../../components/Navbar";
 import { Session } from "@supabase/supabase-js";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import PinProtection from "../../../components/PinProtection";
+import { useLanguage } from "../../../components/LanguageContext";
 
 const COLORS = ['#fc6736', '#fca5a5', '#fbbf24', '#34d399', '#60a5fa'];
 
 export default function TranscriptAnalytics() {
     const { id } = useParams();
     const router = useRouter();
+    const { language } = useLanguage();
 
     const [transcript, setTranscript] = useState<any>(null);
     const [analytics, setAnalytics] = useState<any>(null);
@@ -50,7 +52,10 @@ export default function TranscriptAnalytics() {
             const res = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: data.translated_text || data.raw_text })
+                body: JSON.stringify({ 
+                    text: data.translated_text || data.raw_text,
+                    targetLanguage: language
+                })
             });
 
             const analyzeData = await res.json();

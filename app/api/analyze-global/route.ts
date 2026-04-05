@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 
 export async function POST(req: Request) {
   try {
-    const { transcripts } = await req.json();
+    const { transcripts, targetLanguage = "English" } = await req.json();
 
     if (!transcripts || !Array.isArray(transcripts) || transcripts.length === 0) {
       return NextResponse.json({ error: 'At least one transcript is required' }, { status: 400 });
@@ -25,6 +25,8 @@ export async function POST(req: Request) {
     const prompt = `You are an objective financial insight extractor. 
 Your goal is to improve financial accountability and help users make more informed long-term financial decisions by providing only contextual summaries and objective analytics of their transcriptions.
 You strictly do not provide direct financial advice as an authoritative figure.
+
+IMPORTANT TRANSLATION DIRECTIVE: You MUST translate every single JSON string value strictly and completely into the ${targetLanguage} language! Do not output English unless ${targetLanguage} is English.
 
 I am providing you with a chronological list of ALL financial voice memos and transcripts recorded by the user over time.
 

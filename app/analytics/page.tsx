@@ -12,7 +12,7 @@ import PinProtection from "../../components/PinProtection";
 const COLORS = ['#fc6736', '#fca5a5', '#fbbf24', '#34d399', '#60a5fa', '#818cf8'];
 
 export default function AnalyticsPage() {
-    const { t } = useLanguage();
+    const { language, t } = useLanguage();
     const router = useRouter();
     const [session, setSession] = useState<Session | null>(null);
     const [macroAnalytics, setMacroAnalytics] = useState<any>(null);
@@ -65,7 +65,7 @@ export default function AnalyticsPage() {
             const res = await fetch("/api/analyze-global", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ transcripts: payload })
+                body: JSON.stringify({ transcripts: payload, targetLanguage: language })
             });
 
             const analyzeData = await res.json();
@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
                         <svg className="w-8 h-8 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
-                        Your Analysis
+                        {t("your_analysis")}
                     </h1>
                 </div>
 
@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
                             {/* Persona Identity Component */}
                             <div className="lg:w-1/3 bg-zinc-900/80 border border-brand-500/30 rounded-3xl p-8 shadow-lg shadow-brand-500/10 flex flex-col justify-center items-center text-center relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-brand-600/5 to-transparent pointer-events-none" />
-                                <h3 className="text-xs uppercase tracking-widest text-zinc-500 font-bold mb-4">Primary Financial Focus</h3>
+                                <h3 className="text-xs uppercase tracking-widest text-zinc-500 font-bold mb-4">{t("primary_focus")}</h3>
                                 <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-white">{macroAnalytics?.primaryFocus}</p>
                             </div>
 
@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Objective Contextual Summary
+                                    {t("objective_summary")}
                                 </h3>
                                 <p className="text-zinc-300 leading-relaxed font-medium">
                                     {macroAnalytics?.objectiveSummary}
@@ -146,10 +146,10 @@ export default function AnalyticsPage() {
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                         </svg>
-                                        Financial Suggestions
+                                        {t("financial_suggestions")}
                                     </h3>
                                     <p className="text-[10px] sm:text-xs text-zinc-500 leading-snug mb-6 border-l-2 border-zinc-700 pl-3 italic">
-                                        The Financial Suggestions contain information for suggestive purposes only, and should not be taken as professional or legal advice and we assume no liability for any errors, omissions, or financial decisions made based on its suggestions.
+                                        {t("financial_disclaimer")}
                                     </p>
                                     <div className="space-y-5 overflow-y-auto pr-2 custom-scrollbar">
                                         {macroAnalytics?.suggestions?.map((step: string, idx: number) => (
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
                             {/* Graphic Chart Component */}
                             <div className={`${userMetadata?.disable_financial_suggestions ? 'lg:w-full' : 'lg:w-1/2'} bg-zinc-900/80 border border-white/10 rounded-3xl p-8 shadow-lg`}>
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-zinc-500 mb-6 flex items-center gap-2">
-                                    Aggregated Topic Spread (%)
+                                    {t("topic_spread")}
                                 </h3>
                                 <div className="w-full h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">

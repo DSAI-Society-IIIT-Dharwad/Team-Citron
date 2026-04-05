@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Session } from "@supabase/supabase-js";
 import Navbar from "../../components/Navbar";
 import { useLanguage } from "../../components/LanguageContext";
+import InlinePinModal from "../../components/InlinePinModal";
 
 export default function ProfilePage() {
     const [session, setSession] = useState<Session | null>(null);
@@ -29,6 +30,9 @@ export default function ProfilePage() {
     const [pinInput, setPinInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
     const [resetError, setResetError] = useState("");
+    
+    // Authorization Action Buffers
+    const [pendingToggle, setPendingToggle] = useState<{ action: () => void } | null>(null);
 
     const router = useRouter();
     const { t } = useLanguage();
@@ -160,6 +164,14 @@ export default function ProfilePage() {
         await saveMetadata({ [key]: newVal });
     };
 
+    const handleToggleWithPinCheck = (actionFn: () => void) => {
+        if (pinSettings.pin_hash) {
+            setPendingToggle({ action: actionFn });
+        } else {
+            actionFn();
+        }
+    };
+
     if (!session) return null;
 
     return (
@@ -169,7 +181,7 @@ export default function ProfilePage() {
             <Navbar />
 
             <main className="relative z-10 p-8 max-w-2xl mx-auto w-full flex flex-col pt-16">
-                <h1 className="text-4xl font-bold mb-8">Settings</h1>
+                <h1 className="text-4xl font-bold mb-8">{t("settings")}</h1>
 
                 <div className="w-full bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl flex flex-col gap-10">
                     
@@ -188,17 +200,17 @@ export default function ProfilePage() {
 
                     {/* GENERAL PREFERENCES */}
                     <div>
-                        <h3 className="text-brand-400 font-bold uppercase tracking-widest text-sm mb-4">Application Preferences</h3>
+                        <h3 className="text-brand-400 font-bold uppercase tracking-widest text-sm mb-4">{t("application_preferences")}</h3>
 
                         <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 mb-4 shadow-inner">
                             <div className="flex flex-col">
                                 <span className="text-white font-medium">{t("allow_ambient_recording")}</span>
-                                <span className="text-zinc-500 text-xs mt-1">Globally enable or disable auto-recording listener</span>
+                                <span className="text-zinc-500 text-xs mt-1">{t("ambient_subtext")}</span>
                             </div>
                             <button
                                 role="switch"
                                 aria-checked={ambientAllowed}
-                                onClick={toggleAmbientAllowed}
+                                onClick={() => handleToggleWithPinCheck(toggleAmbientAllowed)}
                                 className={`${ambientAllowed ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                             >
                                 <span className={`${ambientAllowed ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
@@ -207,13 +219,13 @@ export default function ProfilePage() {
 
                         <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 mb-4 shadow-inner">
                             <div className="flex flex-col pr-4">
-                                <span className="text-white font-medium">Disable Financial Suggestions</span>
-                                <span className="text-zinc-500 text-xs mt-1">Hide the AI actionable suggestions tracker from your Transcripts & Global dashboards.</span>
+                                <span className="text-white font-medium">{t("disable_suggestions")}</span>
+                                <span className="text-zinc-500 text-xs mt-1">{t("disable_suggestions_sub")}</span>
                             </div>
                             <button
                                 role="switch"
                                 aria-checked={disableSuggestions}
-                                onClick={() => toggleMetadataFlag('disable_financial_suggestions', disableSuggestions)}
+                                onClick={() => handleToggleWithPinCheck(() => toggleMetadataFlag('disable_financial_suggestions', disableSuggestions))}
                                 disabled={savingPrefs}
                                 className={`${disableSuggestions ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                             >
@@ -231,14 +243,14 @@ export default function ProfilePage() {
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
-                                Security Settings
+                                {t("security_settings")}
                             </h3>
                             {pinSettings.pin_hash && (
                                 <button 
                                     onClick={() => setShowPinReset(true)}
                                     className="text-xs text-red-400 hover:text-red-300 font-medium hover:underline transition-all"
                                 >
-                                    Forgot or Reset PIN?
+                                    {t("forgot_pin")}
                                 </button>
                             )}
                         </div>
@@ -258,24 +270,24 @@ export default function ProfilePage() {
                                 <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 shadow-inner opacity-50">
                                     <div className="flex flex-col">
                                         <span className="text-white font-medium flex items-center gap-2">
-                                            PIN Status
+                                            {t("pin_status")}
                                             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                             </svg>
                                         </span>
-                                        <span className="text-green-500/80 text-xs mt-1">Active and safeguarding your preferences.</span>
+                                        <span className="text-green-500/80 text-xs mt-1">{t("pin_status_sub")}</span>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 shadow-inner">
                                     <div className="flex flex-col pr-4">
-                                        <span className="text-white font-medium">Require PIN for Transcripts</span>
-                                        <span className="text-zinc-500 text-xs mt-1">Demand PIN entry when viewing History</span>
+                                        <span className="text-white font-medium">{t("req_transcripts")}</span>
+                                        <span className="text-zinc-500 text-xs mt-1">{t("req_transcripts_sub")}</span>
                                     </div>
                                     <button
                                         role="switch"
                                         aria-checked={pinSettings.reqTranscripts}
-                                        onClick={() => toggleMetadataFlag('req_pin_transcripts', pinSettings.reqTranscripts)}
+                                        onClick={() => handleToggleWithPinCheck(() => toggleMetadataFlag('req_pin_transcripts', pinSettings.reqTranscripts))}
                                         disabled={savingPrefs}
                                         className={`${pinSettings.reqTranscripts ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                                     >
@@ -285,13 +297,13 @@ export default function ProfilePage() {
 
                                 <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 shadow-inner">
                                     <div className="flex flex-col pr-4">
-                                        <span className="text-white font-medium">Require PIN for Global Analytics</span>
-                                        <span className="text-zinc-500 text-xs mt-1">Block access to the Fractional CFO dashboard</span>
+                                        <span className="text-white font-medium">{t("req_analytics")}</span>
+                                        <span className="text-zinc-500 text-xs mt-1">{t("req_analytics_sub")}</span>
                                     </div>
                                     <button
                                         role="switch"
                                         aria-checked={pinSettings.reqAnalytics}
-                                        onClick={() => toggleMetadataFlag('req_pin_analytics', pinSettings.reqAnalytics)}
+                                        onClick={() => handleToggleWithPinCheck(() => toggleMetadataFlag('req_pin_analytics', pinSettings.reqAnalytics))}
                                         disabled={savingPrefs}
                                         className={`${pinSettings.reqAnalytics ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                                     >
@@ -301,13 +313,13 @@ export default function ProfilePage() {
 
                                 <div className="flex items-center justify-between bg-black/20 px-5 py-4 rounded-2xl border border-white/5 shadow-inner">
                                     <div className="flex flex-col pr-4">
-                                        <span className="text-white font-medium">Require PIN for Lock/Unlock Feature</span>
-                                        <span className="text-zinc-500 text-xs mt-1">Validates authentication when toggling edit blocks</span>
+                                        <span className="text-white font-medium">{t("req_lock")}</span>
+                                        <span className="text-zinc-500 text-xs mt-1">{t("req_lock_sub")}</span>
                                     </div>
                                     <button
                                         role="switch"
                                         aria-checked={pinSettings.reqLock}
-                                        onClick={() => toggleMetadataFlag('req_pin_lock', pinSettings.reqLock)}
+                                        onClick={() => handleToggleWithPinCheck(() => toggleMetadataFlag('req_pin_lock', pinSettings.reqLock))}
                                         disabled={savingPrefs}
                                         className={`${pinSettings.reqLock ? 'bg-brand-500' : 'bg-white/10 hover:bg-white/20'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
                                     >
@@ -322,7 +334,7 @@ export default function ProfilePage() {
                         onClick={handleLogout}
                         className="mt-6 px-6 py-3 w-fit text-sm font-bold rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/30 transition-all text-red-500 self-center"
                     >
-                        Sign Out of Account
+                        {t("sign_out_acc")}
                     </button>
                 </div>
             </main>
@@ -402,6 +414,18 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* INLINE TOGGLE PIN VALIDATOR */}
+            {pendingToggle && pinSettings.pin_hash && (
+                <InlinePinModal
+                    requiredPinEncoded={pinSettings.pin_hash}
+                    onSuccess={() => {
+                        pendingToggle.action();
+                        setPendingToggle(null);
+                    }}
+                    onCancel={() => setPendingToggle(null)}
+                />
             )}
 
         </div>

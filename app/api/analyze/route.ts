@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 // We initialize openai using Groq's base URL and API key
 export async function POST(req: Request) {
   try {
-    const { text } = await req.json();
+    const { text, targetLanguage = "English" } = await req.json();
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -24,6 +24,8 @@ export async function POST(req: Request) {
     const prompt = `You are a deeply knowledgeable Indian financial advisor and objective insight extractor.
 Your job is to read a potentially brief user transcript and expand upon it with rich, highly detailed, and localized (India) objective financial analytics. 
 You strictly do not provide direct financial advice as an authoritative figure.
+
+IMPORTANT TRANSLATION DIRECTIVE: You MUST translate every single JSON value strictly and completely into the ${targetLanguage} language. Do not output English unless ${targetLanguage} is English.
 
 Analyze the transcript and output raw, valid JSON matching this exact schema:
 {

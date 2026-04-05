@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useLanguage } from "./LanguageContext";
+import { useLanguage, Language } from "./LanguageContext";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -41,23 +41,37 @@ export default function Navbar() {
                         className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors bg-white/5 px-4 py-1.5 rounded-full border border-white/10"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
-                        {language === "Hindi" ? "हिंदी" : "English"}
+                        {(() => {
+                            const MAP: Record<string, string> = {
+                                English: "English", Hindi: "हिंदी", Bengali: "বাংলা", Tamil: "தமிழ்", Telugu: "తెలుగు", Gujarati: "ગુજરાતી", Kannada: "ಕನ್ನಡ", Malayalam: "മലയാളം", Marathi: "मराठी", Punjabi: "ਪੰਜਾਬੀ", Odia: "ଓଡ଼ିଆ"
+                            };
+                            return MAP[language] || "English";
+                        })()}
                     </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute top-full right-0 mt-2 w-32 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
-                            <button
-                                onClick={() => { setLanguage("English"); setIsDropdownOpen(false); }}
-                                className={`w-full text-left px-4 py-2 hover:bg-white/5 transition-colors ${language === "English" ? "text-brand-500" : "text-zinc-300"}`}
-                            >
-                                English
-                            </button>
-                            <button
-                                onClick={() => { setLanguage("Hindi"); setIsDropdownOpen(false); }}
-                                className={`w-full text-left px-4 py-2 hover:bg-white/5 transition-colors ${language === "Hindi" ? "text-brand-500" : "text-zinc-300"}`}
-                            >
-                                हिंदी
-                            </button>
+                        <div className="absolute top-full right-0 mt-2 w-32 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl max-h-64 overflow-y-auto custom-scrollbar">
+                            {[
+                                { name: "English", display: "English" },
+                                { name: "Hindi", display: "हिंदी" },
+                                { name: "Bengali", display: "বাংলা" },
+                                { name: "Tamil", display: "தமிழ்" },
+                                { name: "Telugu", display: "తెలుగు" },
+                                { name: "Gujarati", display: "ગુજરાતી" },
+                                { name: "Kannada", display: "ಕನ್ನಡ" },
+                                { name: "Malayalam", display: "മലയാളം" },
+                                { name: "Marathi", display: "मराठी" },
+                                { name: "Punjabi", display: "ਪੰਜਾਬੀ" },
+                                { name: "Odia", display: "ଓଡ଼ିଆ" },
+                            ].map((lang) => (
+                                <button
+                                    key={lang.name}
+                                    onClick={() => { setLanguage(lang.name as Language); setIsDropdownOpen(false); }}
+                                    className={`w-full text-left px-4 py-2 hover:bg-white/5 transition-colors ${language === lang.name ? "text-brand-500 font-bold" : "text-zinc-300"}`}
+                                >
+                                    {lang.display}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </div>
